@@ -38,16 +38,38 @@ int PrintAll(struct List *p){
 }
 
 int Del(struct List *p,int Number) {
+  if(Number == 0){ //一番最初だったら、前回の結果を参考に消去ができないため、別の処理を用意する。
+    //具体的には、最初の値をfreeして、そこに別のインスタンスをつっこみ、Nextに三つ目のポインタを入れる。
+    //freeせずにそのままインスタンスを作る方向に変更
+    struct List tmp = *p;
+    p = (struct List*)malloc(sizeof(struct List));
+    p -> Value = tmp.Next -> Value;
+    p -> Next = tmp.Next -> Next;
+  }
   struct List *CurrentPointer = p;
   int Result = 0;
   for(int Count = 0;;Count++){
     if(Count == Number - 1) { //消す奴の一個前まで来たら
       Result = CurrentPointer -> Next -> Value;
+      struct List *tmp = CurrentPointer -> Next;
       CurrentPointer -> Next = CurrentPointer -> Next -> Next;
+      free(tmp);
+      break;
     }
     CurrentPointer = CurrentPointer -> Next;
   }
   return Result;
+}
+
+void freeall(struct List *p) {
+  struct List *CurrentPointer = p;
+  struct List *tmp;
+  for(;;){
+    if(CurrentPointer -> isEnd == 1) break;
+    tmp = CurrentPointer -> Next;
+    free(CurrentPointer);
+    CurrentPointer = tmp;
+  }
 }
 
 int main(void){
@@ -63,7 +85,11 @@ int main(void){
   Add(list,987654);
   Add(list,114514);
   Del(list,1);
+  //Del(list,0);
   x = PrintAll(list);
+
+  //freeall(list);
+
 
   printf("%d\n" ,x);
 
