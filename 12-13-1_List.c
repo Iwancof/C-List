@@ -26,7 +26,7 @@ int Add(struct List *p,int val){
   return Count + 1; //リストの個数を入れる(最初は0で個数は「0が一つ」なので+1)
 }
 
-int PrintAll(struct List *p){
+int PrintAll(struct List *p){ //すべての要素を表示
   struct List *CurrentPointer = p;
   int Count = 0;
   for(;;Count++){
@@ -34,7 +34,7 @@ int PrintAll(struct List *p){
     if(CurrentPointer -> isEnd == 1) break; //そのデータが最後だったら終了
     CurrentPointer = CurrentPointer -> Next;
   }
-  return Count + 1;
+  return Count + 1; //返り値として、リストの要素数を返す。
 }
 
 int Del(struct List *p,int Number) {
@@ -61,37 +61,40 @@ int Del(struct List *p,int Number) {
   return Result;
 }
 
-void freeall(struct List *p) {
+void freeall(struct List *p) { //リストすべてのメモリの開放
   struct List *CurrentPointer = p;
   struct List *tmp;
   for(;;){
-    if(CurrentPointer -> isEnd == 1) break;
-    tmp = CurrentPointer -> Next;
-    free(CurrentPointer);
-    CurrentPointer = tmp;
+    if(CurrentPointer -> isEnd == 1) break; //最後だったら終了
+    tmp = CurrentPointer -> Next; //次で開放してしまうため、次のポインターの情報を取っておく。
+    free(CurrentPointer); //開放
+    CurrentPointer = tmp; //次
   }
 }
 
+void Init(struct List **p,int val) { //リスト最初の要素を初期化
+  *p = (struct List*)malloc(sizeof(struct List)); //メモリを確保して、
+  (*p) -> Value = val; //値を入れ、
+  (*p) -> isEnd = 1; //最後であることを指定する。
+  /*
+    struct List **pとなっているのは、ポインタのポインタを渡して、それにmalloc
+    してもらったら、「ポインタが参照渡し」され、向こう(この関数)で値が書き換わるから。
+  */
+}
+
 int main(void){
-  struct List *list;
-  list = (struct List*)malloc(sizeof(struct List));
-  list -> isEnd = 1;
-  list -> Value = 10;
+  struct List *list; //リスト作成。
+  Init(&list,10); //最初の要素を初期化。
 
-  int x = 0;
+  Add(list,20);
+  Add(list,30);
+  Add(list,50);
+  Add(list,80);
 
-  x = Add(list,30);
-  Add(list,100);
-  Add(list,987654);
-  Add(list,114514);
-  Del(list,1);
-  //Del(list,0);
-  x = PrintAll(list);
+  PrintAll(list);
 
-  //freeall(list);
 
-  printf("%d\n" ,x);
-
+  printf("\n");
   return 0;
 
 }
