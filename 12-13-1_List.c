@@ -90,7 +90,6 @@ int main(void){
 
   //freeall(list);
 
-
   printf("%d\n" ,x);
 
   return 0;
