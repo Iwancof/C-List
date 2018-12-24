@@ -4,11 +4,17 @@
 
 struct List {
   int Value; //データ部分
-  int isEnd; //最後だったら1;
+  int isEnd; //最後だったら1
+  int isFirst; //最初だったら1
   struct List *Next; //次のデータ構造体
 };
 
 int Add(struct List *p,int val){
+  if(p -> isFirst  == 1 && p -> isEnd == -1){
+    p -> Value = val;
+    p -> isEnd = 1;
+    return 1;
+  }
   struct List *CurrentPointer = p;
   int Count = 0;
   for(;;Count++){
@@ -21,10 +27,11 @@ int Add(struct List *p,int val){
     newlist = (struct List*)malloc(sizeof(struct List)); //メモリ確保をして
     newlist -> isEnd = 1; //最後なので設定して
     newlist -> Value = val; //追加する値を入れる。
+    newlist -> isFirst = 0;
     CurrentPointer -> Next = newlist; //データ列に追加
     break;
   }
-  return Count + 1; //リストの個数を入れる(最初は0で個数は「0が一つ」なので+1)
+  return Count + 2; //リストの個数を入れる(最初は0で個数は「0が一つ」なので+1)
 }
 
 int PrintAll(struct List *p){ //すべての要素を表示
@@ -38,15 +45,16 @@ int PrintAll(struct List *p){ //すべての要素を表示
   return Count + 1; //返り値として、リストの要素数を返す。
 }
 
-int Del(struct List *p,int Number) { //バグあり
-  /*if(Number == 0){ //一番最初だったら、前回の結果を参考に消去ができないため、別の処理を用意する。
+int Removed_Del(struct List *p,int Number) { //バグあり
+  if(Number == 0){ //一番最初だったら、前回の結果を参考に消去ができないため、別の処理を用意する。
     //具体的には、最初の値をfreeして、そこに別のインスタンスをつっこみ、Nextに三つ目のポインタを入れる。
     //freeせずにそのままインスタンスを作る方向に変更
-    struct List tmp = *p;
+    struct List tmp = *p; //最初のインスタンスを格納
     p = (struct List*)malloc(sizeof(struct List));
     p -> Value = tmp.Next -> Value;
     p -> Next = tmp.Next -> Next;
-  }*/
+    return 0;
+  }
   struct List *CurrentPointer = p;
   int Result = 0;
   for(int Count = 0;;Count++){
@@ -62,6 +70,31 @@ int Del(struct List *p,int Number) { //バグあり
   return Result;
 }
 
+int Del(struct List **p,int Number){
+  Number--; //最初が1なので0から始まる添え字に変更
+  if(Number == 0) { //最初だったら
+    struct List *NewListPointer = (struct List*)malloc(sizeof(struct List));
+    NewListPointer -> Value = (*p) -> Next -> Value;
+    NewListPointer -> Next = (*p) -> Next -> Next;
+    *p = NewListPointer;
+    return 0;
+  }
+  struct List *CurrentPointer = *p;
+  int Result = 0;
+  for(int Count = 0;;Count++){
+    if(Count == Number - 1) { //消す奴の一個前まで来たら
+      Result = CurrentPointer -> Next -> Value;
+      struct List *tmp = CurrentPointer -> Next;
+      CurrentPointer -> Next = CurrentPointer -> Next -> Next;
+      free(tmp);
+      break;
+    }
+    CurrentPointer = CurrentPointer -> Next;
+  }
+  return Result;  
+}
+
+
 void freeall(struct List *p) { //リストすべてのメモリの開放
   struct List *CurrentPointer = p;
   struct List *tmp;
@@ -73,14 +106,21 @@ void freeall(struct List *p) { //リストすべてのメモリの開放
   }
 }
 
-void Init(struct List **p,int val) { //リスト最初の要素を初期化
+void Removed_Init(struct List **p,int val) { //リスト最初の要素を初期化
   *p = (struct List*)malloc(sizeof(struct List)); //メモリを確保して、
   (*p) -> Value = val; //値を入れ、
   (*p) -> isEnd = 1; //最後であることを指定する。
+  (*p) -> isFirst = 1; //最初であることを指定する。
   /*
     struct List **pとなっているのは、ポインタのポインタを渡して、それにmalloc
     してもらったら、「ポインタが参照渡し」され、向こう(この関数)で値が書き換わるから。
   */
+}
+void Init(struct List **p){
+  *p = (struct List*)malloc(sizeof(struct List));
+  (*p) -> isFirst = 1; //最初
+  (*p) -> isEnd = -1; //特殊な場合を振り分けるため
+  return;
 }
 
 int GetSum(struct List *p){
@@ -103,37 +143,3 @@ int Count(struct List *p){ //すべての要素を表示
   }
   return Count + 1; //返り値として、リストの要素数を返す。
 }
-
-/*
-int main(void){
-  //作ったリストで平均を求めるプログラムを作ってみる。
-  //クラスの人数は10人、それぞれの点数をリストにいれる。
-
-  struct List *list; //リスト作成。
-  int x = 0; //最初の値は初期化時に入れる必要があるでの変数を用意する。(今後対応予定)
-  printf("1人目の点数を入力してください。");
-  scanf("%d",&x);
-  Init(&list,x); //最初の要素を初期化。
-
-  for(int Count = 2;;Count++){
-    printf("%d人目の点数を入力してください。-1で終了します。",Count);
-    scanf("%d",&x);
-    if(x == -1) break;
-    Add(list,x);
-  }
-
-  PrintAll(list); //すべて表示
-  printf("\n");
-
-  //機能テストのため、2人目のデータを消してみる。
-  Del(list,2);
-
-  PrintAll(list); //消去後のデータをすべて表示
-  printf("\n");
-
-  float Ave = GetSum(list) / (float)Count(list); //平均を求める。
-  printf("Ave = %.2f\n",Ave); //表示
-
-  return 0;
-}
-*/
