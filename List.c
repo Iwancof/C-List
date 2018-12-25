@@ -154,8 +154,8 @@ int Count(struct List *p){ //すべての要素をカウント
   for(int i = 0;i < count;i++){
     *(p + size * i) = 
   }
-}*/
+}
 
 //void Insert()
-
+*/
 
