@@ -2,14 +2,16 @@
 #include<stdlib.h>
 #include "List.h"
 
+typedef float ValueType; //Value Type
+
 struct List {
-  int Value; //データ部分
+  ValueType Value; //データ部分
   int isEnd; //最後だったら1
   int isFirst; //最初だったら1
   struct List *Next; //次のデータ構造体
 };
 
-int Add(struct List *p,int val){
+int Add(struct List *p,ValueType val){
   if(p -> isFirst  == 1 && p -> isEnd == -1){
     p -> Value = val;
     p -> isEnd = 1;
@@ -38,14 +40,14 @@ int PrintAll(struct List *p){ //すべての要素を表示
   struct List *CurrentPointer = p;
   int Count = 0;
   for(;;Count++){
-    printf("%d,",CurrentPointer -> Value); //表示
+    printf("%f,",CurrentPointer -> Value); //表示
     if(CurrentPointer -> isEnd == 1) break; //そのデータが最後だったら終了
     CurrentPointer = CurrentPointer -> Next;
   }
   return Count + 1; //返り値として、リストの要素数を返す。
 }
 
-int Removed_Del(struct List *p,int Number) { //バグあり
+ValueType Removed_Del(struct List *p,int Number) { //バグあり
   if(Number == 0){ //一番最初だったら、前回の結果を参考に消去ができないため、別の処理を用意する。
     //具体的には、最初の値をfreeして、そこに別のインスタンスをつっこみ、Nextに三つ目のポインタを入れる。
     //freeせずにそのままインスタンスを作る方向に変更
@@ -56,7 +58,7 @@ int Removed_Del(struct List *p,int Number) { //バグあり
     return 0;
   }
   struct List *CurrentPointer = p;
-  int Result = 0;
+  ValueType Result = 0;
   for(int Count = 0;;Count++){
     if(Count == Number - 1) { //消す奴の一個前まで来たら
       Result = CurrentPointer -> Next -> Value;
@@ -70,17 +72,18 @@ int Removed_Del(struct List *p,int Number) { //バグあり
   return Result;
 }
 
-int Del(struct List **p,int Number){
+ValueType Del(struct List **p,int Number){
   Number--; //最初が1なので0から始まる添え字に変更
   if(Number == 0) { //最初だったら
     struct List *NewListPointer = (struct List*)malloc(sizeof(struct List));
     NewListPointer -> Value = (*p) -> Next -> Value;
     NewListPointer -> Next = (*p) -> Next -> Next;
+    ValueType Result = (*p) -> Value;
     *p = NewListPointer;
-    return 0;
+    return Result;
   }
   struct List *CurrentPointer = *p;
-  int Result = 0;
+  ValueType Result = 0;
   for(int Count = 0;;Count++){
     if(Count == Number - 1) { //消す奴の一個前まで来たら
       Result = CurrentPointer -> Next -> Value;
@@ -106,7 +109,7 @@ void freeall(struct List *p) { //リストすべてのメモリの開放
   }
 }
 
-void Removed_Init(struct List **p,int val) { //リスト最初の要素を初期化
+void Removed_Init(struct List **p,ValueType val) { //リスト最初の要素を初期化
   *p = (struct List*)malloc(sizeof(struct List)); //メモリを確保して、
   (*p) -> Value = val; //値を入れ、
   (*p) -> isEnd = 1; //最後であることを指定する。
@@ -123,8 +126,8 @@ void Init(struct List **p){
   return;
 }
 
-int GetSum(struct List *p){
-  int Result = 0;
+ValueType GetSum(struct List *p){
+  ValueType Result = 0;
   struct List *CurrentPointer = p;
   for(;;){
     Result += CurrentPointer -> Value;
@@ -134,7 +137,7 @@ int GetSum(struct List *p){
   return Result;
 }
 
-int Count(struct List *p){ //すべての要素を表示
+int Count(struct List *p){ //すべての要素をカウント
   struct List *CurrentPointer = p;
   int Count = 0;
   for(;;Count++){
@@ -143,3 +146,16 @@ int Count(struct List *p){ //すべての要素を表示
   }
   return Count + 1; //返り値として、リストの要素数を返す。
 }
+
+/*void ToArray(struct List *p){
+  int size = sizeof(ValueType);
+  int count = Count(*p);
+  struct 
+  for(int i = 0;i < count;i++){
+    *(p + size * i) = 
+  }
+}*/
+
+//void Insert()
+
+

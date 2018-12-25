@@ -2,7 +2,24 @@
 #include<stdlib.h>
 #include "List.h"
 
+int main(void){
+  struct List *list;
+  Init(&list);
 
+  Add(list,10);
+  Add(list,20);
+  Add(list,30);
+
+  float Array[] = malloc(sizeof(float) * Count(list));
+
+
+  PrintAll(list);
+
+  return 0;
+}
+
+
+/*
 int main(void){
   //作ったリストで平均を求めるプログラムを作ってみる。
   //クラスの人数は10人、それぞれの点数をリストにいれる。
@@ -31,4 +48,4 @@ int main(void){
   printf("Ave = %.2f\n",Ave); //表示
 
   return 0;
-}
+}*/
